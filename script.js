@@ -139,7 +139,11 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Formulário de Contato - Validação e Envio
+// Formulário de Contato - DESATIVADO (usando FormSubmit.co)
+// O formulário agora envia via POST para FormSubmit.co
+// Se quiser voltar para JavaScript, descomente o código abaixo
+
+/*
 const contactForm = document.querySelector('.contato-form');
 if (contactForm) {
     contactForm.addEventListener('submit', (e) => {
@@ -161,6 +165,7 @@ if (contactForm) {
         contactForm.reset();
     });
 }
+*/
 
 // Função para mostrar notificações
 function showNotification(message, type = 'success') {

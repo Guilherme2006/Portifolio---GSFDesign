@@ -1,0 +1,25 @@
+# robots.txt - Portfolio Giovanni Sucigan Felippe
+
+# Permitir todos os bots de busca legítimos
+User-agent: *
+Allow: /
+
+# Bloquear bots maliciosos conhecidos
+User-agent: AhrefsBot
+User-agent: SemrushBot
+User-agent: MJ12bot
+User-agent: DotBot
+User-agent: Screaming Frog SEO Spider
+Disallow: /
+
+# Bloquear scrapers de email
+User-agent: EmailCollector
+User-agent: EmailSiphon
+User-agent: EmailWolf
+Disallow: /
+
+# Sitemap (quando criar)
+Sitemap: https://seudominio.com/sitemap.xml
+
+# Tempo entre requisições (em segundos)
+Crawl-delay: 1
