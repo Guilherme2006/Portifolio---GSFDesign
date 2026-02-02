@@ -302,11 +302,6 @@ cursor.style.cssText = `
 `;
 document.body.appendChild(cursor);
 
-document.addEventListener('mousemove', (e) => {
-    cursor.style.display = 'block';
-    cursor.style.left = e.clientX + 'px';
-    cursor.style.top = e.clientY + 'px';
-});
 
 // Efeito hover nos elementos interativos
 const interactiveElements = document.querySelectorAll('a, button, .servico-card, .projeto-card');
@@ -687,36 +682,25 @@ viewProjectLinks.forEach(link => {
 });
 
 // Adicionar efeitos de hover nos cards de projeto
-const projectCards = document.querySelectorAll('.projeto-card');
-projectCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-        card.style.transform = 'translateY(-10px) scale(1.02)';
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        card.style.transform = 'translateY(0) scale(1)';
-    });
-});
+document.addEventListener('DOMContentLoaded', () => {
 
-// Adicionar animação de entrada aos elementos quando ficam visíveis
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+    const observerOptions = {
+        threshold: 0.15
+    };
 
-const fadeInObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
+    const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('is-visible');
+                obs.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    document.querySelectorAll(
+        '.servico-card, .projeto-card, .timeline-item, .habilidade-categoria'
+    ).forEach(el => {
+        observer.observe(el);
     });
-}, observerOptions);
 
-// Observar todos os cards e seções
-document.querySelectorAll('.servico-card, .projeto-card, .timeline-item, .habilidade-categoria').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'all 0.6s ease-out';
-    fadeInObserver.observe(el);
 });
