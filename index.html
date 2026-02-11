@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="/main.jpg">
     <title>Giovanni Sucigan Felippe - Designer de Artes para Instagram</title>
 </head>
 
@@ -109,7 +110,7 @@
                 <h3>Design para Instagram</h3>
                 <p>Criação de artes estratégicas para feed, stories, reels e carrosséis. Cada design é pensado para
                     gerar engajamento e aumentar seus seguidores organicamente.</p>
-                <a href="#" class="service-link" data-service="instagram">Saiba mais <i
+                <a href="#contato" class="service-link" data-service="instagram">Saiba mais <i
                         class="fas fa-arrow-right"></i></a>
             </div>
             <div class="servico-card">
@@ -119,7 +120,7 @@
                 <h3>Estratégia de Crescimento</h3>
                 <p>Planejamento visual estratégico para aumentar seguidores. Análise de concorrência, definição de
                     paleta de cores e identidade que converte.</p>
-                <a href="#" class="service-link" data-service="crescimento">Saiba mais <i
+                <a href="#contato" class="service-link" data-service="crescimento">Saiba mais <i
                         class="fas fa-arrow-right"></i></a>
             </div>
             <div class="servico-card">
@@ -129,7 +130,7 @@
                 <h3>Identidade Visual</h3>
                 <p>Desenvolvimento de identidade visual completa para Instagram: logo, paleta de cores, tipografia e
                     templates personalizados para seu nicho.</p>
-                <a href="#" class="service-link" data-service="identidade">Saiba mais <i
+                <a href="#contato" class="service-link" data-service="identidade">Saiba mais <i
                         class="fas fa-arrow-right"></i></a>
             </div>
             <div class="servico-card">
@@ -139,7 +140,7 @@
                 <h3>Templates Editáveis</h3>
                 <p>Criação de templates personalizados no Canva ou Photoshop para você usar e manter consistência visual
                     no seu perfil.</p>
-                <a href="#" class="service-link" data-service="templates">Saiba mais <i
+                <a href="#contato" class="service-link" data-service="templates">Saiba mais <i
                         class="fas fa-arrow-right"></i></a>
             </div>
             <div class="servico-card">
@@ -149,7 +150,7 @@
                 <h3>Design para Reels</h3>
                 <p>Artes, capas e elementos visuais para seus Reels. Designs que param o scroll e aumentam visualizações
                     e compartilhamentos.</p>
-                <a href="#" class="service-link" data-service="reels">Saiba mais <i class="fas fa-arrow-right"></i></a>
+                <a href="#contato" class="service-link" data-service="reels">Saiba mais <i class="fas fa-arrow-right"></i></a>
             </div>
             <div class="servico-card">
                 <div class="icon-wrapper">
@@ -158,7 +159,7 @@
                 <h3>Pacotes Mensais</h3>
                 <p>Planos mensais de artes para manter seu feed sempre atualizado e profissional. De 10 a 30 posts por
                     mês, com revisões incluídas.</p>
-                <a href="#" class="service-link" data-service="pacotes">Saiba mais <i
+                <a href="#contato" class="service-link" data-service="pacotes">Saiba mais <i
                         class="fas fa-arrow-right"></i></a>
             </div>
         </div>
@@ -488,16 +489,22 @@
 
             </div>
 
-            <form class="contato-form">
+           <form action="https://formsubmit.co/guis.felippe@gmail.com" method="POST" class="contato-form">
+                <!-- Configurações do FormSubmit -->
+                <input type="hidden" name="_subject" value="🎨 Novo contato do Portfolio Giovanni!">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+                <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off">
+                
                 <div class="form-group">
-                    <input type="text" placeholder="Seu Nome" required>
-                    <input type="email" placeholder="Seu Email" required>
+                    <input type="text" name="name" placeholder="Seu Nome" required>
+                    <input type="email" name="email" placeholder="Seu Email" required>
                 </div>
                 <div class="form-group">
-                    <input type="text" placeholder="Assunto" required>
-                    <input type="tel" placeholder="Telefone">
+                    <input type="text" name="subject" placeholder="Assunto" required>
+                    <input type="tel" name="phone" placeholder="Telefone">
                 </div>
-                <textarea placeholder="Sua Mensagem" rows="8" required></textarea>
+                <textarea name="message" placeholder="Sua Mensagem" rows="8" required></textarea>
                 <button type="submit" class="btn">Enviar Mensagem <i class="fas fa-paper-plane"></i></button>
             </form>
         </div>
