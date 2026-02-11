@@ -379,6 +379,7 @@ if ('IntersectionObserver' in window) {
 
 // Modal de Serviços
 const modal = document.getElementById('serviceModal');
+const modalCta = document.querySelector(".modal-cta");
 const serviceLinks = document.querySelectorAll('.service-link');
 const modalClose = document.querySelector('.modal-close');
 
@@ -536,6 +537,24 @@ document.addEventListener('keydown', (e) => {
     }
 });
 
+modalCta.addEventListener("click", function (e) {
+    e.preventDefault(); // impede o scroll automático
+
+    // Fecha o modal
+    modal.classList.remove("active");
+    document.body.style.overflow = "auto";
+
+    // Espera a animação terminar (ajuste se necessário)
+    setTimeout(() => {
+        const contato = document.querySelector("#contato");
+        if (contato) {
+            contato.scrollIntoView({ behavior: "smooth" });
+        }
+    }, 300);
+});
+
+
+
 // Botão de Download Portfólio
 const downloadBtn = document.getElementById('downloadPortfolio');
 if (downloadBtn) {
@@ -664,25 +683,221 @@ window.addEventListener('scroll', () => {
 
 console.log('%c✨ Site totalmente funcional!', 'font-size: 16px; font-weight: bold; color: #10b981;');
 
-// Funcionalidade de visualização de projetos
-const viewProjectLinks = document.querySelectorAll('.view-project');
+// Funcionalidade de visualização de projetos com Modal Carrossel
+let currentSlideIndex = 0;
+let currentImages = [];
+let currentProjectTitle = '';
+let currentProjectDescription = '';
 
-viewProjectLinks.forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const projectId = link.getAttribute('data-project');
-        showNotification('🎨 Abrindo detalhes do projeto...', 'success');
-        
-        // Aqui você pode adicionar lógica para abrir um modal com mais imagens
-        // ou redirecionar para uma página específica do projeto
-        setTimeout(() => {
-            showNotification('💡 Em breve: Galeria completa de imagens!', 'success');
-        }, 1000);
+// Criar Modal Carrossel dinamicamente
+function createImageModal() {
+    const existingModal = document.getElementById('imageModal');
+    if (existingModal) return;
+
+    const modal = document.createElement('div');
+    modal.id = 'imageModal';
+    modal.className = 'image-modal';
+    modal.innerHTML = `
+        <div class="modal-content">
+            <button class="modal-close" aria-label="Fechar imagem">&times;</button>
+            
+            <div class="carousel-container">
+                <img id="modalImage" src="" alt="Imagem do projeto" class="modal-image">
+                
+                <button class="carousel-btn carousel-prev" aria-label="Imagem anterior">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-btn carousel-next" aria-label="Próxima imagem">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="carousel-indicators" id="carouselIndicators"></div>
+            </div>
+            
+            <div class="modal-info">
+                <h3 id="modalTitle" class="modal-title"></h3>
+                <p id="modalDescription" class="modal-description"></p>
+                <div class="image-counter">
+                    <span id="imageCounter">1</span> / <span id="totalImages">1</span>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.appendChild(modal);
+
+    // Eventos
+    const closeBtn = modal.querySelector('.modal-close');
+    const prevBtn = modal.querySelector('.carousel-prev');
+    const nextBtn = modal.querySelector('.carousel-next');
+
+    closeBtn.addEventListener('click', closeImageModal);
+    prevBtn.addEventListener('click', () => changeSlide(-1));
+    nextBtn.addEventListener('click', () => changeSlide(1));
+
+    // Fechar ao clicar fora
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closeImageModal();
+        }
     });
-});
 
-// Adicionar efeitos de hover nos cards de projeto
+    // Navegação via teclado
+    document.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('active')) return;
+        if (e.key === 'Escape') closeImageModal();
+        if (e.key === 'ArrowLeft') changeSlide(-1);
+        if (e.key === 'ArrowRight') changeSlide(1);
+    });
+}
+
+function changeSlide(direction) {
+    if (currentImages.length === 0) return;
+    
+    currentSlideIndex += direction;
+    
+    // Loop carrossel
+    if (currentSlideIndex >= currentImages.length) {
+        currentSlideIndex = 0;
+    } else if (currentSlideIndex < 0) {
+        currentSlideIndex = currentImages.length - 1;
+    }
+    
+    updateSlide();
+}
+
+function updateSlide() {
+    const modalImage = document.getElementById('modalImage');
+    const imageCounter = document.getElementById('imageCounter');
+    const indicators = document.querySelectorAll('.carousel-indicator');
+    
+    modalImage.src = currentImages[currentSlideIndex];
+    imageCounter.textContent = currentSlideIndex + 1;
+    
+    // Atualizar indicadores
+    indicators.forEach((indicator, index) => {
+        indicator.classList.toggle('active', index === currentSlideIndex);
+    });
+}
+
+function openImageModal(images, title, description) {
+    const modal = document.getElementById('imageModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalDescription = document.getElementById('modalDescription');
+    const totalImages = document.getElementById('totalImages');
+    const indicatorsContainer = document.getElementById('carouselIndicators');
+
+    // Definir dados globais
+    currentImages = images;
+    currentSlideIndex = 0;
+    currentProjectTitle = title;
+    currentProjectDescription = description;
+
+    // Atualizar conteúdo
+    modalTitle.textContent = title;
+    modalDescription.textContent = description;
+    totalImages.textContent = images.length;
+
+    // Criar indicadores
+    indicatorsContainer.innerHTML = '';
+    images.forEach((_, index) => {
+        const indicator = document.createElement('button');
+        indicator.className = 'carousel-indicator' + (index === 0 ? ' active' : '');
+        indicator.setAttribute('aria-label', `Ir para imagem ${index + 1}`);
+        indicator.addEventListener('click', () => {
+            currentSlideIndex = index;
+            updateSlide();
+        });
+        indicatorsContainer.appendChild(indicator);
+    });
+
+    updateSlide();
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+    currentImages = [];
+}
+
+// Inicializar o modal
+createImageModal();
+
+// ===== CONFIGURAÇÃO DE IMAGENS =====
+
+const projectData = {
+    feed1: {
+        title: 'Loja de Moda Premium',
+        description: 'Identidade visual completa para loja de moda. Feed harmônico com paleta rosa e dourado. Resultado: +15k seguidores em 3 meses.',
+        images: [
+            'https://gsfdesign.com.br/img1.jpg',
+            'https://gsfdesign.com.br/img2.jpg',
+            'https://gsfdesign.com.br/img3.jpg',
+            'https://gsfdesign.com.br/img4.jpg'
+        ]
+    },
+    stories1: {
+        title: 'Stories Interativos',
+        description: 'Templates de stories com enquetes, caixinhas de perguntas e quizzes para aumentar o engajamento e interação com a audiência.',
+        images: [
+            'https://gsfdesign.com.br/img2.jpg',
+            'https://gsfdesign.com.br/img3.jpg'
+        ]
+    },
+    feed2: {
+        title: 'Academia & Fitness',
+        description: 'Redesign completo de feed fitness com antes/depois, dicas de treino e motivação. Crescimento de 200% no engajamento.',
+        images: [
+            'https://gsfdesign.com.br/img3.jpg',
+            'https://gsfdesign.com.br/img4.jpg'
+        ]
+    },
+    reels1: {
+        title: 'Reels de Receitas',
+        description: 'Criação de capas e elementos visuais para Reels de culinária. Vídeos alcançaram +500k visualizações cada.',
+        images: [
+            'https://gsfdesign.com.br/img1.jpg',
+            'https://gsfdesign.com.br/img2.jpg'
+        ]
+    },
+    feed3: {
+        title: 'Criador de Conteúdo',
+        description: 'Identidade visual para produtor digital. Carrosséis educativos, posts de valor e calls-to-action estratégicos.',
+        images: [
+            'https://gsfdesign.com.br/img1.jpg',
+            'https://gsfdesign.com.br/img3.jpg',
+            'https://gsfdesign.com.br/img4.jpg'
+        ]
+    },
+    stories2: {
+        title: 'Campanha de Lançamento',
+        description: 'Sequência de 15 stories para lançamento de produto digital. Design estratégico que gerou R$50k em vendas.',
+        images: [
+            'https://gsfdesign.com.br/img2.jpg',
+            'https://gsfdesign.com.br/img4.jpg',
+            'https://gsfdesign.com.br/img1.jpg'
+        ]
+    }
+};
+
+// Event listeners para os links de visualização de projetos
 document.addEventListener('DOMContentLoaded', () => {
+    const viewProjectLinks = document.querySelectorAll('.view-project');
+    
+    viewProjectLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const projectId = link.getAttribute('data-project');
+            const project = projectData[projectId];
+
+            if (project) {
+                openImageModal(project.images, project.title, project.description);
+                showNotification('🎨 Galeria de imagens carregada!', 'success');
+            }
+        });
+    });
 
     const observerOptions = {
         threshold: 0.15
@@ -702,5 +917,4 @@ document.addEventListener('DOMContentLoaded', () => {
     ).forEach(el => {
         observer.observe(el);
     });
-
 });
