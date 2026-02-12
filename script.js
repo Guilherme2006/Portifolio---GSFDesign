@@ -1,8 +1,9 @@
-// Menu Toggle para Mobile
+// Menu Toggle para Mobile - COM SUPORTE A TOUCH
 const menuToggle = document.getElementById('menu-toggle');
 const navbar = document.getElementById('navbar');
 
-menuToggle.addEventListener('click', () => {
+function toggleMenu() {
+    console.log('Menu toggle - State:', navbar.classList.contains('active'));
     navbar.classList.toggle('active');
     
     // Muda o ícone do menu
@@ -14,53 +15,159 @@ menuToggle.addEventListener('click', () => {
         icon.classList.remove('fa-times');
         icon.classList.add('fa-bars');
     }
-});
+}
+
+// Click event
+menuToggle.addEventListener('click', toggleMenu);
+
+// Touch event para mobile (mais responsivo)
+menuToggle.addEventListener('touchstart', function(e) {
+    e.preventDefault();
+    toggleMenu();
+}, { passive: false });
 
 // Fecha o menu ao clicar em um link
+const closeMenuOnLinkClick = () => {
+    navbar.classList.remove('active');
+    const icon = menuToggle.querySelector('i');
+    icon.classList.remove('fa-times');
+    icon.classList.add('fa-bars');
+};
+
+// Navegação Ativa e Links
 const navLinks = document.querySelectorAll('nav a');
 navLinks.forEach(link => {
-    link.addEventListener('click', () => {
-        navbar.classList.remove('active');
-        const icon = menuToggle.querySelector('i');
-        icon.classList.remove('fa-times');
-        icon.classList.add('fa-bars');
+    link.addEventListener('click', (e) => {
+        // Smooth scroll para seções
+        const href = link.getAttribute('href');
+        if (href.startsWith('#') && href !== '#') {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        
+        // Fecha o menu
+        closeMenuOnLinkClick();
+    });
+    
+    // Touch event também
+    link.addEventListener('touchend', (e) => {
+        const href = link.getAttribute('href');
+        if (href.startsWith('#') && href !== '#') {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        }
+        closeMenuOnLinkClick();
     });
 });
 
-// Navegação Ativa baseada na Scroll
-window.addEventListener('scroll', () => {
-    const sections = document.querySelectorAll('section');
-    const scrollPosition = window.scrollY + 150;
-
-    sections.forEach(section => {
-        const top = section.offsetTop;
-        const height = section.offsetHeight;
-        const id = section.getAttribute('id');
-        
-        if (scrollPosition >= top && scrollPosition < top + height) {
-            navLinks.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('href') === `#${id}`) {
-                    link.classList.add('active');
-                }
-            });
+// Logo também faz smooth scroll
+const logo = document.querySelector('.logo');
+if (logo) {
+    logo.addEventListener('click', (e) => {
+        const href = logo.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+            closeMenuOnLinkClick();
         }
     });
+    
+    // Touch event
+    logo.addEventListener('touchend', (e) => {
+        const href = logo.getAttribute('href');
+        if (href && href.startsWith('#')) {
+            e.preventDefault();
+            const target = document.querySelector(href);
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+            closeMenuOnLinkClick();
+        }
+    });
+}
 
-    // Header com fundo ao fazer scroll
-    const header = document.querySelector('header');
-    if (window.scrollY > 100) {
-        header.classList.add('scrolled');
-    } else {
-        header.classList.remove('scrolled');
+// Fechar menu ao clicar fora
+document.addEventListener('click', (e) => {
+    // Se navbar está ativa e o clique foi fora do menu e fora do botão toggle
+    if (navbar.classList.contains('active') && 
+        !navbar.contains(e.target) && 
+        !menuToggle.contains(e.target)) {
+        closeMenuOnLinkClick();
     }
+}, true);
 
-    // Botão Voltar ao Topo
-    const backToTop = document.getElementById('backToTop');
-    if (window.scrollY > 300) {
-        backToTop.classList.add('active');
-    } else {
-        backToTop.classList.remove('active');
+// Touch event para fechar menu ao tocar fora
+document.addEventListener('touchend', (e) => {
+    if (navbar.classList.contains('active') && 
+        !navbar.contains(e.target) && 
+        !menuToggle.contains(e.target)) {
+        closeMenuOnLinkClick();
+    }
+}, true);
+
+// Navegação Ativa baseada na Scroll - COM THROTTLE
+let scrollTicking = false;
+window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+        window.requestAnimationFrame(() => {
+            const sections = document.querySelectorAll('section');
+            const scrollPosition = window.scrollY + 150;
+
+            sections.forEach(section => {
+                const top = section.offsetTop;
+                const height = section.offsetHeight;
+                const id = section.getAttribute('id');
+                
+                if (scrollPosition >= top && scrollPosition < top + height) {
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${id}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+
+            // Header com fundo ao fazer scroll
+            const header = document.querySelector('header');
+            if (window.scrollY > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+
+            // Botão Voltar ao Topo
+            const backToTop = document.getElementById('backToTop');
+            if (window.scrollY > 300) {
+                backToTop.classList.add('active');
+            } else {
+                backToTop.classList.remove('active');
+            }
+            
+            scrollTicking = false;
+        });
+        scrollTicking = true;
     }
 });
 
@@ -123,20 +230,6 @@ animatedElements.forEach(el => {
     el.style.transform = 'translateY(30px)';
     el.style.transition = 'all 0.6s ease-out';
     observer.observe(el);
-});
-
-// Smooth Scroll para Links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
 });
 
 // Formulário de Contato - DESATIVADO (usando FormSubmit.co)
@@ -286,77 +379,6 @@ if (habilidadesSection) {
     progressObserver.observe(habilidadesSection);
 }
 
-// Cursor personalizado (opcional - remova se não quiser)
-const cursor = document.createElement('div');
-cursor.className = 'custom-cursor';
-cursor.style.cssText = `
-    width: 20px;
-    height: 20px;
-    border: 2px solid #ff6b35;
-    border-radius: 50%;
-    position: fixed;
-    pointer-events: none;
-    z-index: 9999;
-    transition: 0.1s;
-    display: none;
-`;
-document.body.appendChild(cursor);
-
-
-// Efeito hover nos elementos interativos
-const interactiveElements = document.querySelectorAll('a, button, .servico-card, .projeto-card');
-interactiveElements.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-        cursor.style.transform = 'scale(1.5)';
-        cursor.style.borderColor = '#f7931e';
-    });
-    
-    el.addEventListener('mouseleave', () => {
-        cursor.style.transform = 'scale(1)';
-        cursor.style.borderColor = '#ff6b35';
-    });
-});
-
-// Easter Egg: Konami Code
-let konamiCode = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-let konamiIndex = 0;
-
-document.addEventListener('keydown', (e) => {
-    if (e.key === konamiCode[konamiIndex]) {
-        konamiIndex++;
-        if (konamiIndex === konamiCode.length) {
-            activateEasterEgg();
-            konamiIndex = 0;
-        }
-    } else {
-        konamiIndex = 0;
-    }
-});
-
-function activateEasterEgg() {
-    showNotification('🎉 Você encontrou o Easter Egg! Modo Especial Ativado!', 'success');
-    document.body.style.animation = 'rainbow 3s infinite';
-    
-    setTimeout(() => {
-        document.body.style.animation = '';
-    }, 10000);
-}
-
-// Adiciona animação rainbow para o easter egg
-const rainbowStyle = document.createElement('style');
-rainbowStyle.textContent = `
-    @keyframes rainbow {
-        0% { filter: hue-rotate(0deg); }
-        100% { filter: hue-rotate(360deg); }
-    }
-`;
-document.head.appendChild(rainbowStyle);
-
-// Log de boas-vindas no console
-console.log('%c👋 Olá, curioso!', 'font-size: 20px; font-weight: bold; color: #ff6b35;');
-console.log('%c🎨 Gostou do portfólio? Vamos criar algo juntos!', 'font-size: 14px; color: #f7931e;');
-console.log('%c💼 Email: giovanni.design@email.com', 'font-size: 12px; color: #b8b8b8;');
-
 // Performance: Lazy loading para imagens (se aplicável)
 if ('IntersectionObserver' in window) {
     const imageObserver = new IntersectionObserver((entries) => {
@@ -487,6 +509,7 @@ const servicesData = {
 serviceLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
+        e.stopPropagation();
         const serviceType = link.getAttribute('data-service');
         const serviceData = servicesData[serviceType];
         
@@ -511,8 +534,20 @@ serviceLinks.forEach(link => {
             // Mostrar modal
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
+            
+            // Garantir scroll funciona
+            setTimeout(() => {
+                const modalContent = document.querySelector('.modal-content');
+                if (modalContent) {
+                    modalContent.scrollTop = 0;
+                    // Força o browser a calcular o scroll
+                    modalContent.style.overflow = 'hidden';
+                    modalContent.offsetHeight;
+                    modalContent.style.overflow = 'scroll';
+                }
+            }, 50);
         }
-    });
+    }, { passive: false });
 });
 
 // Fechar modal
@@ -521,37 +556,49 @@ modalClose.addEventListener('click', () => {
     document.body.style.overflow = 'auto';
 });
 
+// Função auxiliar para fechar modal
+function closeServiceModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+}
+
+// Fechar modal ao clicar no X
+modalClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    closeServiceModal();
+}, { passive: false });
+
 // Fechar modal clicando fora
 modal.addEventListener('click', (e) => {
     if (e.target === modal) {
-        modal.classList.remove('active');
-        document.body.style.overflow = 'auto';
+        closeServiceModal();
     }
-});
+}, { passive: false });
 
 // Fechar modal com ESC
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
-        modal.classList.remove('active');
-        document.body.style.overflow = 'auto';
+        closeServiceModal();
     }
-});
+}, { passive: false });
 
+// Botão "Solicitar Orçamento" - Fecha e navega
 modalCta.addEventListener("click", function (e) {
-    e.preventDefault(); // impede o scroll automático
+    e.preventDefault();
+    e.stopPropagation();
 
-    // Fecha o modal
-    modal.classList.remove("active");
-    document.body.style.overflow = "auto";
+    // Fecha modal imediatamente
+    closeServiceModal();
 
-    // Espera a animação terminar (ajuste se necessário)
+    // Navega para contato
     setTimeout(() => {
         const contato = document.querySelector("#contato");
         if (contato) {
             contato.scrollIntoView({ behavior: "smooth" });
         }
-    }, 300);
-});
+    }, 200);
+}, { passive: false });
 
 
 
@@ -588,10 +635,10 @@ whatsappLinks.forEach(link => {
     });
 });
 
-// Adicionar efeito parallax suave ao scroll
-let ticking = false;
+// Adicionar efeito parallax suave ao scroll - OTIMIZADO
+let parallaxTicking = false;
 window.addEventListener('scroll', () => {
-    if (!ticking) {
+    if (!parallaxTicking) {
         window.requestAnimationFrame(() => {
             const scrolled = window.pageYOffset;
             const parallaxElements = document.querySelectorAll('.home-img, .sobre-img');
@@ -601,45 +648,11 @@ window.addEventListener('scroll', () => {
                 element.style.transform = `translateY(${scrolled * speed}px)`;
             });
             
-            ticking = false;
+            parallaxTicking = false;
         });
-        ticking = true;
+        parallaxTicking = true;
     }
 });
-
-// Adicionar contadores animados na primeira visualização
-let countersAnimated = false;
-const counters = document.querySelectorAll('.info-item h4');
-
-const animateCountersOnce = () => {
-    if (countersAnimated) return;
-    
-    const sobreSection = document.querySelector('.sobre');
-    const rect = sobreSection.getBoundingClientRect();
-    const isVisible = rect.top < window.innerHeight && rect.bottom >= 0;
-    
-    if (isVisible) {
-        counters.forEach(counter => {
-            const target = parseInt(counter.textContent);
-            if (!isNaN(target)) {
-                let count = 0;
-                const increment = target / 100;
-                const timer = setInterval(() => {
-                    count += increment;
-                    if (count >= target) {
-                        counter.textContent = target + '+';
-                        clearInterval(timer);
-                    } else {
-                        counter.textContent = Math.floor(count) + '+';
-                    }
-                }, 20);
-            }
-        });
-        countersAnimated = true;
-    }
-};
-
-window.addEventListener('scroll', animateCountersOnce);
 
 // Melhorar UX do formulário
 const contactForm = document.querySelector('.contato-form');
@@ -661,27 +674,6 @@ if (contactForm) {
         });
     });
 }
-
-// Adicionar indicador de progresso da página
-const progressBar = document.createElement('div');
-progressBar.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 3px;
-    background: var(--gradient-1);
-    z-index: 10001;
-    transition: width 0.1s ease;
-`;
-document.body.appendChild(progressBar);
-
-window.addEventListener('scroll', () => {
-    const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (window.pageYOffset / windowHeight) * 100;
-    progressBar.style.width = scrolled + '%';
-});
-
-console.log('%c✨ Site totalmente funcional!', 'font-size: 16px; font-weight: bold; color: #10b981;');
 
 // Funcionalidade de visualização de projetos com Modal Carrossel
 let currentSlideIndex = 0;
@@ -883,38 +875,17 @@ const projectData = {
 };
 
 // Event listeners para os links de visualização de projetos
-document.addEventListener('DOMContentLoaded', () => {
-    const viewProjectLinks = document.querySelectorAll('.view-project');
-    
-    viewProjectLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const projectId = link.getAttribute('data-project');
-            const project = projectData[projectId];
+const viewProjectLinks = document.querySelectorAll('.view-project');
 
-            if (project) {
-                openImageModal(project.images, project.title, project.description);
-                showNotification('🎨 Galeria de imagens carregada!', 'success');
-            }
-        });
-    });
+viewProjectLinks.forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const projectId = link.getAttribute('data-project');
+        const project = projectData[projectId];
 
-    const observerOptions = {
-        threshold: 0.15
-    };
-
-    const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('is-visible');
-                obs.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    document.querySelectorAll(
-        '.servico-card, .projeto-card, .timeline-item, .habilidade-categoria'
-    ).forEach(el => {
-        observer.observe(el);
+        if (project) {
+            openImageModal(project.images, project.title, project.description);
+            showNotification('🎨 Galeria de imagens carregada!', 'success');
+        }
     });
 });

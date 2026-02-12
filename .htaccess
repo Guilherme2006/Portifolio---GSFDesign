@@ -70,7 +70,7 @@ Options -Indexes
 <IfModule mod_rewrite.c>
     RewriteEngine On
     
-    # Bloquear strings SQL na URL
+    # Bloquear tentativas de SQL injection
     RewriteCond %{QUERY_STRING} (union|select|insert|cast|set|declare|drop|update|delete) [NC]
     RewriteRule ^(.*)$ - [F,L]
     
@@ -86,12 +86,13 @@ Options -Indexes
 
 # PROTEÇÃO 6: Proteção contra Hotlinking
 # ================================================
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteCond %{HTTP_REFERER} !^$
-    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?http://gsfdesign.com.br/ [NC]
-    RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ - [F,NC]
-</IfModule>
+# DESATIVADO - NÃO BLOQUEAR SUAS PRÓPRIAS IMAGENS!
+# <IfModule mod_rewrite.c>
+#     RewriteEngine On
+#     RewriteCond %{HTTP_REFERER} !^$
+#     RewriteCond %{HTTP_REFERER} !^https?://(www\.)?gsfdesign.com.br [NC]
+#     RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ - [F,NC]
+# </IfModule>
 
 # PROTEÇÃO 7: Bloquear Bots Maliciosos
 # ================================================
