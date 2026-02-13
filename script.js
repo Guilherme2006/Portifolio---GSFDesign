@@ -232,33 +232,49 @@ animatedElements.forEach(el => {
     observer.observe(el);
 });
 
-// Formulário de Contato - DESATIVADO (usando FormSubmit.co)
-// O formulário agora envia via POST para FormSubmit.co
-// Se quiser voltar para JavaScript, descomente o código abaixo
+// Formulário de Contato - Integração com FormSubmit.co
+// Envia o formulário e volta automaticamente para o site
 
-/*
 const contactForm = document.querySelector('.contato-form');
 if (contactForm) {
-    contactForm.addEventListener('submit', (e) => {
+    contactForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        // Aqui você pode adicionar a lógica de envio do formulário
-        // Por exemplo, usando fetch para enviar para um backend
-        
-        // Mensagem de sucesso (exemplo)
         const formData = new FormData(contactForm);
+        const submitButton = contactForm.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
         
-        // Simulação de envio
-        console.log('Formulário enviado!');
-        
-        // Mostra mensagem de sucesso
-        showNotification('Mensagem enviada com sucesso! Retornarei em breve.', 'success');
-        
-        // Limpa o formulário
-        contactForm.reset();
+        try {
+            // Muda o texto do botão
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Enviando...';
+            
+            // Envia o formulário via fetch
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData
+            });
+            
+            // Mostra mensagem de sucesso
+            showNotification('✓ Mensagem enviada com sucesso! Retornarei em breve.', 'success');
+            
+            // Limpa o formulário
+            contactForm.reset();
+            
+            // Restaura o botão após 2 segundos
+            setTimeout(() => {
+                submitButton.disabled = false;
+                submitButton.innerHTML = originalText;
+            }, 2000);
+            
+        } catch (error) {
+            console.error('Erro ao enviar:', error);
+            showNotification('❌ Erro ao enviar mensagem. Tente novamente.', 'error');
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalText;
+        }
     });
 }
-*/
 
 // Função para mostrar notificações
 function showNotification(message, type = 'success') {
@@ -655,7 +671,6 @@ window.addEventListener('scroll', () => {
 });
 
 // Melhorar UX do formulário
-const contactForm = document.querySelector('.contato-form');
 if (contactForm) {
     const inputs = contactForm.querySelectorAll('input, textarea');
     
