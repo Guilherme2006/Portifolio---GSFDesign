@@ -1,3 +1,40 @@
+# Proteção básica de rotas — redireciona/nega acessos diretos via URL
+# Ajuste o domínio abaixo se usar outro domínio/alias.
+RewriteEngine On
+
+# --- Forçar HTTPS ---
+RewriteCond %{HTTPS} !=on
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+# --- Impedir listagem de diretório ---
+Options -Indexes
+
+# --- Bloquear acesso a arquivos sensíveis ---
+<FilesMatch "\.(env|git|htaccess|htpasswd)$">
+    Require all denied
+</FilesMatch>
+
+# Bloquear acesso direto a arquivos .html e .php se o Referer não for do domínio
+RewriteCond %{REQUEST_URI} \.(html|php)$ [NC]
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?gsfdesign\.com\.br [NC]
+RewriteRule .* / [R=302,L]
+
+# Permitir assets estáticos (CSS, JS, imagens)
+RewriteCond %{REQUEST_URI} \.(css|js|jpg|jpeg|png|gif|svg|ico|webp)$ [NC]
+RewriteRule .* - [L]
+
+# --- Security Headers ---
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Permissions-Policy "geolocation=(), microphone=()"
+    Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://cdnjs.cloudflare.com; style-src 'self' https://cdnjs.cloudflare.com 'unsafe-inline'; font-src https://cdnjs.cloudflare.com; img-src 'self' data: https:; connect-src 'self'; form-action 'self' https://formsubmit.co; frame-ancestors 'none';"
+</IfModule>
+
+# Observação: HSTS e CSP exigem HTTPS; ajuste o domínio em HSTS se necessário.
 # ================================================
 # SEGURANÇA MÁXIMA - PORTFOLIO GIOVANNI
 # Configurado especificamente para LOCAWEB
@@ -118,8 +155,8 @@ Options -Indexes
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType text/css "access plus 0 seconds"
+    ExpiresByType application/javascript "access plus 0 seconds"
     ExpiresByType text/html "access plus 0 seconds"
 </IfModule>
 
