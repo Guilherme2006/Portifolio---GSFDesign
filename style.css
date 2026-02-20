@@ -79,7 +79,7 @@ header.scrolled {
     box-shadow: var(--shadow-md);
 }
 
-.logo {
+.logo-text {
     font-family: 'Playfair Display', serif;
     font-size: 3.5rem;
     font-weight: 900;
@@ -89,6 +89,30 @@ header.scrolled {
     background-clip: text;
     cursor: pointer;
     transition: 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo-img {
+    width: 60px;   /* ajuste como quiser */
+    height: auto;
+    display: block;
+}
+
+.logo-container {
+    position: relative;
+    display: inline-block;
+}
+
+.logo-glow {
+    position: absolute;
+    inset: -8px;
+    background: var(--gradient-1);
+    border-radius: 20px;
+    filter: blur(25px);
+    opacity: 0.6;
+    z-index: -1;
 }
 
 .logo:hover {
